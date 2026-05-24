@@ -19,6 +19,9 @@
     /**
     * @class Solver
     * @brief Class implementing the Jacobi algorithm to solve the Laplace equation.
+    * @details The solver is the most important feature of the project. 
+    * @invariant
+    * @note 
     */
     class Solver {
         private:

@@ -1,0 +1,12 @@
+# exact solution
+sin(2*pi*x)*sin(2*pi*y)
+# force
+8*pi^2*sin(2*pi*x)*sin(2*pi*y)
+# Dirichlet x = 0
+0
+# Dirichlet x = 1
+0
+# Dirichlet y = 0
+0
+# Dirichlet y = 1
+0

@@ -71,3 +71,6 @@ Testing/
 
 # IDE specific files
 /.vscode/
+
+# Local docker container configuration
+.devcontainer/
