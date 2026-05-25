@@ -4,7 +4,9 @@
  * @brief Aliases file containing all common type aliases used.
  * @version 1.0
  * @date 23-05-2026
- * @details 
+ * @details This file mostly contains useful type aliases used in the code, 
+ * together with structs that contain all the useful information for configurating
+ * the problem and parallelisation.
  */
 
  #pragma once
@@ -43,6 +45,7 @@
      * @details To be used for the reading of the data file
      */
     using FunctionList = std::vector<function>;
+
     /** 
      * @brief Dynamic matrix of real numbers
      * @details stored in row-major order for better performance in our use case
@@ -63,7 +66,7 @@
 
     /**
     * @struct ParallelConfig
-     *@brief Structure containing the configuration parameters for parallelization.
+    * @brief Structure containing the configuration parameters for parallelization.
     */
     struct ParallelConfig{
         int rank = 0; ///< Rank of the current process
