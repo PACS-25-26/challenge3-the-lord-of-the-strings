@@ -30,17 +30,4 @@
 
     void init_solver(Laplace::SolverConfig& s_config, const std::string& config_file);
 
-    /**
-     * @brief Reader of data.txt file that parses all given functions
-     * 
-     * @details The data.txt file is such that the following functions are provided:
-     * exact solution \f$ u_{ex} \f$, given force \f$ f(x) \f$, Dirichlet boundary
-     * conditions given in the following order: \f$ x = 0;\ x = 1;\ y = 0;\ y = 1. \f$.
-     * The functions are all read and parsed into functions, and added into a vector
-     * that will be provided to the solver.
-     * @param filename file to be read
-     * @param coord Coordinates to be evaluated
-     * @return std::vector containing all parsed functions in described order
-     */
-    FunctionList read_data (const std::string& filename, Coord* coord);
    }
