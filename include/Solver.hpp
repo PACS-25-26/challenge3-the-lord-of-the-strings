@@ -9,7 +9,6 @@
 
  #pragma once
  #include "Alias.hpp"
- #include "Utils.hpp"
 
  /**
   * @namespace Laplace

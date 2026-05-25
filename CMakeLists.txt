@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 # Looking for packages
-find_package(MPI REQUIRED)]
+find_package(MPI REQUIRED)
 
 find_package(OpenMP REQUIRED)
 

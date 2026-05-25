@@ -4,9 +4,7 @@
  * @brief Aliases file containing all common type aliases used.
  * @version 1.0
  * @date 23-05-2026
- * @details This file mostly contains useful type aliases used in the code, 
- * together with structs that contain all the useful information for configurating
- * the problem and parallelisation.
+ * @details 
  */
 
  #pragma once
@@ -66,7 +64,7 @@
 
     /**
     * @struct ParallelConfig
-    * @brief Structure containing the configuration parameters for parallelization.
+     *@brief Structure containing the configuration parameters for parallelization.
     */
     struct ParallelConfig{
         int rank = 0; ///< Rank of the current process
