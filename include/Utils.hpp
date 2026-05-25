@@ -20,7 +20,6 @@
    
    /**
     * @brief Function that computes value of force * \f$ f(x_i,\ y_i) \f$
-
     * 
     * @param file_name file to be read
     * @return A matrix containing the function evaluated over the grid
