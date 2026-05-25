@@ -74,3 +74,6 @@ Testing/
 
 # Local docker container configuration
 .devcontainer/
+
+# gitignore
+.gitignore

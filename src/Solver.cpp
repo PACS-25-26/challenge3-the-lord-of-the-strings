@@ -25,3 +25,7 @@ bool Laplace::Solver::check_convergence(const Matrix& U_old, const Matrix& U_new
 
     return global_convergence == 1;
 }
+
+void Laplace::Solver::solve(){
+    
+}
