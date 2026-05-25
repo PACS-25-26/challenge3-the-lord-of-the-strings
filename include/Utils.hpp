@@ -11,7 +11,6 @@
  #pragma once
 
  #include "Alias.hpp"
- #include "Solver.hpp"
 
  /**
   * @namespace Laplace
