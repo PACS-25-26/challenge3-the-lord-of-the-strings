@@ -27,5 +27,21 @@ bool Laplace::Solver::check_convergence(const Matrix& U_old, const Matrix& U_new
 }
 
 void Laplace::Solver::solve(){
-    
+    Index rows = p_config.loc_rows;
+    Index cols = p_config.loc_cols;
+    Real h = s_config.h;
+    size_t max_it = s_config.max_it;
+
+    RealVector ghost_row_up(cols, 0.0);
+    RealVector ghost_row_down(cols, 0.0);
+
+    Matrix U_old = U;
+
+    size_t it = 0;
+    bool converged = false;
+
+    while(!converged && it < max_it){
+
+    }
+
 }
