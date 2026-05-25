@@ -10,7 +10,7 @@
  * The former contains all data regarding the problem to be solved, that is:
  * - Dirichlet problem
  *  -# Exact solution
- *  -# Given force
+ *  -# Given source
  *  -# Dirichlet boundary conditions given in the following order:\n
  *   \f$ x = 0;\ x = 1;\ y = 0;\ y = 1. \f$
  * - Solver parameters
@@ -19,7 +19,7 @@
  *  -# Tolerance for convergence criteria
  *  -# Maximum number of iterations
  * While the latter contains all information about the parallel part.
- * 
+ * The informations are read from a provided "text_case.cfg" configuration file through a provided function. 
  */
 
 #pragma once
@@ -33,12 +33,12 @@ namespace Laplace
     * @brief Structure containing the configuration parameters for the Jacobi solver.
     */
     struct SolverConfig{
-    Function u_ex;
-    Function f;
-    Function cond1;
-    Function cond2;
-    Function cond3;
-    Function cond4;
+    Function u_ex; ///< exact solution
+    Function f; ///< source
+    Function cond1; ///< Dirichlet condition x=0 
+    Function cond2; ///< Dirichlet condition x=1
+    Function cond3; ///< Dirichlet condition y=0
+    Function cond4; ///< Dirichlet condition y=1
     Index N; ///< Number of grid points in each dimension
     Real h; ///< Grid spacing
     Real tol; ///< Tolerance for convergence
@@ -61,14 +61,13 @@ namespace Laplace
     };
 
     /**
-     * @brief Reader of data.txt file that parses all given functions
-
-     * The functions are all read and parsed into functions, and added into a vector
-     * that will be provided to the solver.
-     * @param filename file to be read
-     * @param coord Coordinates to be evaluated
+     * @brief Reader of test_case.cfg file that parses all given functions
+     * 
+     * @details The function reads all data and based on the scope , parses the functions
+     * or directly stores the information.
+     * @param filename file to be read containing 
      * @return std::vector containing all parsed functions in described order
      */
-    FunctionList read_data (const std::string& filename, Coord* coord);
+    SolverConfig read_data(const std::string& filename);
 } 
 
