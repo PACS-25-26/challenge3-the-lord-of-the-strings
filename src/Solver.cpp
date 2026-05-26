@@ -90,6 +90,7 @@ void Laplace::Solver::solve(){
 
 }
 
+// Possibile aggiornamento: aggiungi parametro local_count in p_config e usalo per evitare di fare 
 void Laplace::Solver::convert_to_vtk(const std::string& file_name){
     Index cols = p_config.loc_cols; ///< Global number of columns (same for all processes)
 
