@@ -89,3 +89,64 @@ void Laplace::Solver::solve(){
     }
 
 }
+
+void Laplace::Solver::convert_to_vtk(const std::string& file_name){
+    Index cols = p_config.loc_cols; ///< Global number of columns (same for all processes)
+
+    // Gather global matrix on root process
+    Matrix U_global;
+    if(p_config.rank == 0){
+        U_global.resize(s_config.N, s_config.N);
+    }
+    
+    // Gather the local sizes from all processes to compute the displacements for MPI_Gatherv
+    std::vector<int> recv_counts;
+    std::vector<int> displs;
+    if(p_config.rank == 0){
+        recv_counts.resize(p_config.size);
+        displs.resize(p_config.size);
+    }
+    
+    // Gather the local sizes from all processes
+    int local_size = static_cast<int>(p_config.loc_rows * cols);
+    MPI_Gather(&local_size, 1, MPI_INT, recv_counts.data(), 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    // Compute displacements for MPI_Gatherv
+    if(p_config.rank == 0){
+        displs[0] = 0;
+        for(int i = 1; i < p_config.size; ++i){
+            displs[i] = displs[i-1] + recv_counts[i-1];
+        }
+    }
+
+    // Gather the local matrices into the global matrix on the root process
+    MPI_Gatherv(U.data(), local_size, MPI_DOUBLE, U_global.data(), recv_counts.data(), displs.data(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    // Root process writes the global matrix to a VTK file
+    if(p_config.rank == 0){
+        std::ofstream vtk_file(file_name);
+        if(!vtk_file.is_open()){
+            throw std::runtime_error("Could not open file " + file_name + " for writing .vtk!");
+        }
+
+        vtk_file << "# vtk DataFile Version 3.0\n";
+        vtk_file << "Laplace solution\n";
+        vtk_file << "ASCII\n";
+        vtk_file << "DATASET STRUCTURED_POINTS\n";
+        vtk_file << "DIMENSIONS " << s_config.N << " " << s_config.N << " 1\n";
+        vtk_file << "ORIGIN 0 0 0\n";
+        vtk_file << "SPACING " << s_config.h << " " << s_config.h << " 1\n";
+        vtk_file << "POINT_DATA " << s_config.N * s_config.N << "\n";
+        vtk_file << "SCALARS U double 1\n";
+        vtk_file << "LOOKUP_TABLE default\n";
+
+        for(Index r = 0; r < s_config.N; ++r){
+            Index i = s_config.N - 1 - r; // Reverse row order for VTK
+            for(Index j = 0; j < s_config.N; ++j){
+                vtk_file << U_global(i, j) << "\n";
+            }
+        }
+
+        vtk_file.close();
+    }
+}
