@@ -16,6 +16,7 @@
  #include <memory>
  #include <functional>
  #include <fstream>
+ #include <stdexcept>
 
  #include <mpi.h>
  #include <omp.h>
