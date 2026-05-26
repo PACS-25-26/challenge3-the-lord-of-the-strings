@@ -9,6 +9,7 @@
 
  #pragma once
  #include "Alias.hpp"
+ #include "DataManager.hpp"
 
  /**
   * @namespace Laplace

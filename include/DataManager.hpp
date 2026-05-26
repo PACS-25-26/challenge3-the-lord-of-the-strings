@@ -33,16 +33,16 @@ namespace Laplace
     * @brief Structure containing the configuration parameters for the Jacobi solver.
     */
     struct SolverConfig{
-    Function u_ex; ///< exact solution
-    Function f; ///< source
-    Function cond1; ///< Dirichlet condition x=0 
-    Function cond2; ///< Dirichlet condition x=1
-    Function cond3; ///< Dirichlet condition y=0
-    Function cond4; ///< Dirichlet condition y=1
-    Index N; ///< Number of grid points in each dimension
-    Real h; ///< Grid spacing
-    Real tol; ///< Tolerance for convergence
-    size_t max_it = 10000; ///< Maximum number of iterations
+        Function u_ex; ///< exact solution
+        Function f; ///< source
+        Function cond1; ///< Dirichlet condition x=0 
+        Function cond2; ///< Dirichlet condition x=1
+        Function cond3; ///< Dirichlet condition y=0
+        Function cond4; ///< Dirichlet condition y=1
+        Index N; ///< Number of grid points in each dimension
+        Real h; ///< Grid spacing
+        Real tol; ///< Tolerance for convergence
+        size_t max_it = 10000; ///< Maximum number of iterations
     };
 
     /**
@@ -50,14 +50,14 @@ namespace Laplace
     *@brief Structure containing the configuration parameters for parallelization.
     */
     struct ParallelConfig{
-    int rank = 0; ///< Rank of the current process
-    int size = 1; ///< Total number of processes
+        int rank = 0; ///< Rank of the current process
+        int size = 1; ///< Total number of processes
 
-    Index loc_rows; ///< Number of rows for the current process
-    Index loc_cols; ///< Number of columns for the current process
+        Index loc_rows; ///< Number of rows for the current process
+        Index loc_cols; ///< Number of columns for the current process
 
-    int rank_up; ///< Rank of process above
-    int rank_down; ///< Rank of process below
+        int rank_up; ///< Rank of process above
+        int rank_down; ///< Rank of process below
     };
 
     /**

@@ -29,8 +29,8 @@ endif()
 # Executable
 add_executable(test_parser
     main.cpp
-    src/Utils.cpp
     src/Solver.cpp
+    src/DataManager.cpp
 )
 
 target_include_directories(test_parser PRIVATE
@@ -45,11 +45,11 @@ target_link_libraries(test_parser PRIVATE
     ${MUPARSER_LIBRARY}
 )
 
-# Copy txt file into build directory
+# Copy cfg file into build directory
 add_custom_command(
     TARGET test_parser POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/data.txt
-        ${CMAKE_CURRENT_BINARY_DIR}/data.txt
+        ${CMAKE_CURRENT_SOURCE_DIR}/test_case.cfg
+        ${CMAKE_CURRENT_BINARY_DIR}/test_case.cfg
     COMMENT "Syncing data.txt to build directory"
 )
