@@ -34,6 +34,14 @@ int main(int argc, char** argv) {
 
     Laplace::Coord coords = {0.0, 0.0};
 
+    //check for correct input file
+
+    if (argc < 2) {
+        std::cerr << "Not enough arguments!" << std::endl;
+        return 1; 
+    }
+    std::string file_name = argv[1];
+
     std::string file_name = argv[1];
 
     Laplace::SolverConfig test_funcs = Laplace::read_data(file_name);
