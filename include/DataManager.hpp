@@ -53,7 +53,7 @@ namespace Laplace
         int rank = 0; ///< Rank of the current process
         int size = 1; ///< Total number of processes
 
-        Index statrt_row; ///< Starting row index for the current process
+        Index start_row; ///< Starting row index for the current process
         Index loc_rows; ///< Number of rows for the current process
         Index loc_cols; ///< Number of columns for the current process
 
