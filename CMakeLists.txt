@@ -73,3 +73,22 @@ target_link_libraries(${TEST_EXECUTABLE} PRIVATE
     Eigen3::Eigen          
     ${MUPARSER_LIBRARY}
 )
+
+# Setup of Google Benchmark
+include(FetchContent)
+FetchContent_Declare(
+    googlebenchmark
+    GIT_REPOSITORY https://github.com/google/benchmark.git
+    GIT_TAG v1.9.5
+)
+
+set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable benchmark testing" FORCE)
+FetchContent_MakeAvailable(googlebenchmark)
+
+target_link_libraries(${TEST_EXECUTABLE} PRIVATE
+    MPI::MPI_CXX
+    OpenMP::OpenMP_CXX
+    Eigen3::Eigen          
+    ${MUPARSER_LIBRARY}
+    benchmark::benchmark
+)
