@@ -3,6 +3,10 @@
 namespace Laplace
 {
     namespace {
+            /** 
+             * @brief wrapper class for muParser to allow storing parsed functions as std::function objects
+             * @details This class encapsulates the muparser instance and manages the variable bindings and expression
+             */
             class ParsedFunction {
             public:
 
@@ -45,12 +49,14 @@ namespace Laplace
     }
 
 
+    // helper function to create a std::function from a string expression using the ParsedFunction class
     Function make_parsed_function(const std::string& expr)
     {
-        auto par = std::make_shared<ParsedFunction>(expr);
-        return [par](const Coord& coords) mutable -> double { return (*par)(coords); };
+        auto par = std::make_shared<ParsedFunction>(expr); // shared pointer allows the lambda to capture a copy of the parsed function that remains valid independently of the original object
+        return [par](const Coord& coords) mutable -> double { return (*par)(coords); }; // lambda function that passes the coordinates to the parsed function and returns the result
     }
 
+    // main function to read the data from the file and return a struct with the parsed functions and numerical values
     SolverConfig read_data(const std::string& filename)
     {
         std::ifstream file(filename);
@@ -80,7 +86,7 @@ namespace Laplace
         // creating struct to return
         SolverConfig configs;
 
-        // storing according to data type
+        // storing according to data type using the helper function for the functions
         configs.u_ex = make_parsed_function(read_lines[0]);
         configs.f = make_parsed_function(read_lines[1]);
         configs.cond1 = make_parsed_function(read_lines[2]);
