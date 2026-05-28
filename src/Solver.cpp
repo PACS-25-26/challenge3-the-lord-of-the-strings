@@ -155,7 +155,7 @@ namespace Laplace{
         }
     }
 
-    Solver::Solver(const std::string& config_file, int n_processes) {
+    Solver::Solver(const std::string& config_file) {
         s_config; // = Mettere funzione per inizializzare;
         p_config; //  = Mettere funzione per inizializzare
         
@@ -190,7 +190,48 @@ namespace Laplace{
     }
 
     void Solver::apply_dirichlet_conditions(){
+        if(!check_dirichlet_conditions()){
+            if(p_config.rank == 0){
+                std::cerr << "Inconsistent Dirichlet boundary conditions. Aborting." << std::endl;
+            }
+            MPI_Abort(MPI_COMM_WORLD, 1);
+        }
         ;
     }
 
+    bool Solver::check_dirichlet_conditions(){
+        int consistent = 1;
+        if(p_config.rank == 0){
+            auto cond1 = s_config.cond1; ///< Top boundary condition
+            auto cond2 = s_config.cond2; ///< Right boundary condition
+            auto cond3 = s_config.cond3; ///< Bottom boundary condition
+            auto cond4 = s_config.cond4; ///< Left boundary condition
+
+            Laplace::Coord top_left = {0.0, 1.0};
+            Laplace::Coord top_right = {1.0, 1.0};
+            Laplace::Coord bottom_left = {0.0, 0.0};
+            Laplace::Coord bottom_right = {1.0, 0.0};
+
+            Real tol = 1e-10; ///< Tolerance for checking consistency of boundary conditions
+            if(std::abs(cond1(top_left) - cond4(top_left)) > tol){
+                std::cerr << "Inconsistent boundary conditions at top-left corner" << std::endl;
+                consistent = 0;
+            }
+            if(std::abs(cond1(top_right) - cond2(top_right)) > tol){
+                std::cerr << "Inconsistent boundary conditions at top-right corner" << std::endl;
+                consistent = 0;
+            }
+            if(std::abs(cond3(bottom_left) - cond4(bottom_left)) > tol){
+                std::cerr << "Inconsistent boundary conditions at bottom-left corner" << std::endl;
+                consistent = 0;
+            }
+            if(std::abs(cond3(bottom_right) - cond2(bottom_right)) > tol){
+                std::cerr << "Inconsistent boundary conditions at bottom-right corner" << std::endl;
+                consistent = 0;
+            }
+        }
+        MPI_Bcast(&consistent, 1, MPI_INT, 0, MPI_COMM_WORLD);
+        return consistent == 1;
+    }
+    
 }

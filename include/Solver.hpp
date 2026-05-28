@@ -68,6 +68,13 @@
              */
             void apply_dirichlet_conditions();
 
+            /**
+             * @brief Check well posedeness of Dirichlet boundary conditions.
+             * @details This function check the consistency of the boundary conditions, in particular if
+             * the values at the corners are equal for each function cond1, cond2, cond3, cond4.
+             * @return True if the boundary conditions are consistent, false otherwise.
+             */
+            bool check_dirichlet_conditions();
         public:
             /** 
              * @brief Constructor for the Solver class.
