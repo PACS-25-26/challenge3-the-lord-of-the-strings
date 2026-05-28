@@ -155,7 +155,7 @@ namespace Laplace{
         }
     }
 
-    Solver::Solver(const std::string& config_file){
+    Solver::Solver(const std::string& config_file, int n_processes) {
         s_config = read_data(config_file);
         p_config; //  = Mettere funzione per inizializzare
         
@@ -173,5 +173,5 @@ namespace Laplace{
     void Solver::apply_dirichlet_conditions(){
         ;
     }
-    
+
 }

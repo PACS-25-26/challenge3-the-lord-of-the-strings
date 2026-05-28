@@ -82,7 +82,7 @@
              * @param config_file The name of the configuration file containing the solver and parallel parameters.
              * @details This constructor reads the configuration from a file and initializes the solver accordingly.
              */
-            explicit Solver(const std::string& config_file);
+            Solver(const std::string& config_file, int n_processes = 1);
 
             /**
              * @brief Solves the Laplace equation using the Jacobi method.
