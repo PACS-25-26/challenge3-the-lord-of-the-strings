@@ -156,7 +156,7 @@ namespace Laplace{
     }
 
     Solver::Solver(const std::string& config_file, int n_processes) {
-        s_config = read_data(config_file);
+        s_config; // = Mettere funzione per inizializzare;
         p_config; //  = Mettere funzione per inizializzare
         
         setup(); ///< Initialize the solver based on the provided configurations
@@ -170,6 +170,7 @@ namespace Laplace{
         Index rows = p_config.loc_rows;
         Index cols = p_config.loc_cols; 
         s_config.h = 1.0 / (s_config.N - 1); ///< Compute grid spacing based on the number of grid points
+        auto h = s_config.h;
 
         U.resize(rows, cols);
         U.setZero();
@@ -178,7 +179,14 @@ namespace Laplace{
 
         auto f_force = s_config.f;
 
-
+        /// Initialize the source term F based on source function
+        for(Index i = 0; i < rows; ++i){
+            Index k = p_config.start_row + i; ///< Global row index
+            for(Index j = 0; j < cols; ++j){
+                Laplace::Coord coord = {j * h, k * h}; ///< Compute the coordinates of the grid point
+                F(i,j) = f_force(coord);
+            }
+        }
     }
 
     void Solver::apply_dirichlet_conditions(){
