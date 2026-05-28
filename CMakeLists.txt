@@ -53,3 +53,23 @@ add_custom_command(
         ${CMAKE_CURRENT_BINARY_DIR}/test_case.cfg
     COMMENT "Syncing data.txt to build directory"
 )
+
+# Test executable
+set(TEST_EXECUTABLE laplace_test)
+
+file(GLOB TEST_SOURCES "test/*.cpp")
+file(GLOB SOLVER_SOURCES "src/*.cpp")
+
+add_executable(${TEST_EXECUTABLE} ${TEST_SOURCES} ${SOLVER_SOURCES})
+
+target_include_directories(${TEST_EXECUTABLE} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${MUPARSER_INCLUDE_DIR}
+)
+
+target_link_libraries(${TEST_EXECUTABLE} PRIVATE
+    MPI::MPI_CXX
+    OpenMP::OpenMP_CXX
+    Eigen3::Eigen          
+    ${MUPARSER_LIBRARY}
+)
