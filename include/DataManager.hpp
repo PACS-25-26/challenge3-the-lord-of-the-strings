@@ -95,5 +95,14 @@ namespace Laplace
      * @return data striuct with all the data properly stored and parsed.
      */
     SolverConfig process_data(const std::vector<std::string>& s_vec);
-} 
 
+    /**
+     * @brief Function that creates struct of parallel configuration from provided solver configuration.
+     * @details The function calculates the local grid dimensions and neighboring process ranks based on the global solver configuration and the rank of the current process.
+     * @param s_config The solver configuration struct
+     * @param rank The rank of the current process
+     * @param size The total number of processes
+     * @return data struct with all the parallel configuration parameters properly stored.
+     */
+    ParallelConfig process_parallel_config(Index N);
+}

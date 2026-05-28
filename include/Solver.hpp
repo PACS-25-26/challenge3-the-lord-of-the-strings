@@ -82,7 +82,7 @@
              * @param config_file The name of the configuration file containing the solver and parallel parameters.
              * @details This constructor reads the configuration from a file and initializes the solver accordingly.
              */
-            Solver(const std::string& config_file, int n_processes = 1);
+            Solver(const std::string& config_file);
 
             /**
              * @brief Solves the Laplace equation using the Jacobi method.
@@ -91,9 +91,10 @@
             void solve();
 
             /**
-             * @brief Converts the solution matrix U to VTK format and writes it to a file.
+             * @brief Gathers local solutions from ranks, puts them together and writes the final matrix U into a VTK format file.
              * @param file_name The name of the output VTK file.
-             * @details This function gathers the solution from all processes and writes it in a format suitable for visualize in Paraview.
+             * @details This function gathers the solution from all processes to the master process, which computes a global solution matrix
+             * and writes it to a VTK file for visualization.
              */
             void convert_to_vtk(const std::string& file_name);
     };
