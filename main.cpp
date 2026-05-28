@@ -42,8 +42,6 @@ int main(int argc, char** argv) {
     }
     std::string file_name = argv[1];
 
-    std::string file_name = argv[1];
-
     Laplace::SolverConfig test_funcs = Laplace::read_data(file_name);
     auto exact_sol = test_funcs.u_ex;
     auto f_forcing = test_funcs.f;

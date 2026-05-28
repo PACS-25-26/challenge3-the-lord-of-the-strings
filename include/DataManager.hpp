@@ -61,12 +61,24 @@ namespace Laplace
     };
 
     /**
+     * @brief External function to safely parse the expressions provided
+     * 
+     * @param expr function expression
+     * @return Function ready for evaluation
+     * @details This function uses a class implemented in the cpp (as that is its only use)
+     * that provides a function parser that is safe for shared memory applications, making use of
+     * unique pointers, and preventing copy constructions that can be dangerous in cases of shared memory.
+     */
+    Function make_parsed_function(const std::string& expr);
+
+    /**
      * @brief Reader of test_case.cfg file that parses all given functions
      * 
      * @details The function reads all data and based on the scope , parses the functions
-     * or directly stores the information.
-     * @param filename file to be read containing 
-     * @return std::vector containing all parsed functions in described order
+     * or directly stores the information. in particular it makes use of make_parsed_function for 
+     * the provided function expressions, and puts the data in a struct ready to be provided to the solver.
+     * @param filename file to be read containing all information
+     * @return SolverConfig struct , same data structured used in the solver.
      */
     SolverConfig read_data(const std::string& filename);
 } 
