@@ -3,9 +3,18 @@
 namespace Laplace
 {
     namespace {
-            /** 
-             * @brief wrapper class for muParser to allow storing parsed functions as std::function objects
-             * @details This class encapsulates the muparser instance and manages the variable bindings and expression
+
+            /**
+             * @class ParsedFunction
+             * @brief class wrapper around mu::Parser for evaluating mathematical expressions
+             * @details This class provides a way to safely evaluate the given mathematical functions at 
+             * runtime based on given coordinates.
+             * To ensure safety in shared-memory parallel regions, each instance 
+             * dynamically allocates its own parser with a std::unique_ptr and manages its own 
+             * local coordinate buffer. This avoids race conditions during variable binding.
+             * @note This class is explicitly non-copyable to prevent multiple instances from 
+             * aliasing the same internal coordinate memory addresses, but it supports move semantics 
+             * for efficient ownership transfer.
              */
             class ParsedFunction {
             public:
@@ -57,7 +66,7 @@ namespace Laplace
     }
 
     // main function to read the data from the file and return a struct with the parsed functions and numerical values
-    SolverConfig read_data(const std::string& filename)
+    std::vector<std::string> read_data(const std::string& filename)
     {
         std::ifstream file(filename);
         if(!file.is_open())
@@ -83,22 +92,25 @@ namespace Laplace
             throw std::runtime_error("Error occurred reading the file !");
         }
 
+        return read_lines;
+    }
+
+    SolverConfig process_data(const std::vector<std::string>& s_vec)
+    {
         // creating struct to return
         SolverConfig configs;
 
         // storing according to data type using the helper function for the functions
-        configs.u_ex = make_parsed_function(read_lines[0]);
-        configs.f = make_parsed_function(read_lines[1]);
-        configs.cond1 = make_parsed_function(read_lines[2]);
-        configs.cond2 = make_parsed_function(read_lines[3]);
-        configs.cond3 = make_parsed_function(read_lines[4]);
-        configs.cond4 = make_parsed_function(read_lines[5]);
+        configs.u_ex = make_parsed_function(s_vec[0]);
+        configs.f = make_parsed_function(s_vec[1]);
+        configs.cond1 = make_parsed_function(s_vec[2]);
+        configs.cond2 = make_parsed_function(s_vec[3]);
+        configs.cond3 = make_parsed_function(s_vec[4]);
+        configs.cond4 = make_parsed_function(s_vec[5]);
 
-        configs.N = std::stoul(read_lines[6]);
-        configs.tol = std::stod(read_lines[7]);
-        configs.max_it = std::stoul(read_lines[8]);
+        configs.N = std::stoul(s_vec[6]);
+        configs.tol = std::stod(s_vec[7]);
+        configs.max_it = std::stoul(s_vec[8]);
 
         return configs;
-    }
-
 }

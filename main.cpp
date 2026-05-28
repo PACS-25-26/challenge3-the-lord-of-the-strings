@@ -13,11 +13,28 @@
 
 int main(int argc, char** argv) {
     
-    /* int provided;
+    //check for correct input file
+    if (argc < 3) {
+        std::cerr << "Not enough arguments!" << std::endl;
+        return 1; 
+    }
+
+    std::string file_name = argv[1];
+    int processes = std::stoi(argv[2]);
+
+    Laplace::SolverConfig s_config = read_data(file_name);
+    auto exact_sol = s_config.u_ex;
+    auto f_forcing = s_config.f;
+
+    Laplace:ParallelConfig p_config;
+
+    Laplace::Solver solver(s_config, p_config);
+    
+    int provided;
     MPI_Init_thread(&argc, &argv, MPI_THREAD_FUNNELED, &provided);
 
     Laplace::SolverConfig s_config;
-    Laplace::init_solver(s_config, "config.txt");
+    Laplace::init_solver(s_config, file_name);
 
     Laplace::ParallelConfig p_config;
     Laplace::init_parallel(p_config, s_config.N);
@@ -29,22 +46,8 @@ int main(int argc, char** argv) {
     }
     
     MPI_Finalize();
-    return 0;
-    */
-
+    
     Laplace::Coord coords = {0.0, 0.0};
-
-    //check for correct input file
-
-    if (argc < 2) {
-        std::cerr << "Not enough arguments!" << std::endl;
-        return 1; 
-    }
-    std::string file_name = argv[1];
-
-    Laplace::SolverConfig test_funcs = Laplace::read_data(file_name);
-    auto exact_sol = test_funcs.u_ex;
-    auto f_forcing = test_funcs.f;
 
     Laplace::Coord punto1 = {0.25, 0.25};
     Laplace::Coord punto2 = {0.5, 0.5};

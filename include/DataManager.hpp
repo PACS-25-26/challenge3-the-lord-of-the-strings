@@ -53,6 +53,7 @@ namespace Laplace
         int rank = 0; ///< Rank of the current process
         int size = 1; ///< Total number of processes
 
+        Index statrt_row; ///< Starting row index for the current process
         Index loc_rows; ///< Number of rows for the current process
         Index loc_cols; ///< Number of columns for the current process
 
@@ -72,14 +73,27 @@ namespace Laplace
     Function make_parsed_function(const std::string& expr);
 
     /**
-     * @brief Reader of test_case.cfg file that parses all given functions
+     * @brief Reader of test_case.cfg file.
      * 
-     * @details The function reads all data and based on the scope , parses the functions
-     * or directly stores the information. in particular it makes use of make_parsed_function for 
-     * the provided function expressions, and puts the data in a struct ready to be provided to the solver.
+     * @details The function reads all data and based on the scope and provides a vector
+     * of strings with all the lines read. This is useful to separate from the parsing and elaboration
+     * of the data, to facilitate the MPI communication. In particular, this function is to be called
+     * only by the master process, that will then easily broadcast the vector of strings to each process,
+     * that will autonomously process the data and store it in the struct to avoid problems with shared memory and pointers.
+     * In this way we avoid the need of complex MPI communication for the functions.
      * @param filename file to be read containing all information
-     * @return SolverConfig struct , same data structured used in the solver.
+     * @return vector of string containing all the lines read from the file
      */
-    SolverConfig read_data(const std::string& filename);
+    std::vector<std::string> read_data(const std::string& filename);
+
+    /**
+     * @brief Function that creates struct of solver configuration from provided vector of strings.
+     * @details The function reads all data provided in a vector of strings and parses the functions
+     * or converts numerical data. In particular it makes use of make_parsed_function for 
+     * the provided function expressions, and puts the data in a struct ready to be provided to the solver.
+     * @param s_vec vector of string containing all the lines read from the file, to be processed and stored in the struct
+     * @return data striuct with all the data properly stored and parsed.
+     */
+    SolverConfig process_data(const std::vector<std::string>& s_vec);
 } 
 

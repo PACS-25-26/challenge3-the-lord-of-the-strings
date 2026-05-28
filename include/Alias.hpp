@@ -40,11 +40,7 @@
 
     /** @brief Type alias for functions  */
     using Function = std::function<double(const Coord&)>;
-
-    /** @brief Type alias for a vector of functions
-     * @details To be used for the reading of the data file
-     */
-    using FunctionList = std::vector<Function>;
+    
     /** 
      * @brief Dynamic matrix of real numbers
      * @details stored in row-major order for better performance in our use case
