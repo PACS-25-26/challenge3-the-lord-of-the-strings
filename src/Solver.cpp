@@ -167,7 +167,18 @@ namespace Laplace{
     }
 
     void Solver::setup(){
-        ;
+        Index rows = p_config.loc_rows;
+        Index cols = p_config.loc_cols; 
+        s_config.h = 1.0 / (s_config.N - 1); ///< Compute grid spacing based on the number of grid points
+
+        U.resize(rows, cols);
+        U.setZero();
+        
+        F.resize(rows, cols);
+
+        auto f_force = s_config.f;
+
+
     }
 
     void Solver::apply_dirichlet_conditions(){
