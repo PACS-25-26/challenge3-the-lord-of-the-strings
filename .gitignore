@@ -77,3 +77,9 @@ Testing/
 
 # gitignore
 .gitignore
+
+# google benchmark files
+_deps
+
+.agents
+.codex

@@ -53,27 +53,19 @@ namespace Laplace{
                         ghost_row_up.data(), cols, MPI_DOUBLE, p_config.rank_up, 0,
                         MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             
-            // Update U using the Jacobi method
+            // Update local rows using ghost values when the adjacent row lives on another rank.
             #pragma omp parallel for collapse(2)
-            for(Index i = 1; i < rows - 1; ++i){
+            for(Index i = 0; i < rows; ++i){
                 for(Index j = 1; j < cols - 1; ++j){
-                    U(i, j) = 0.25 * (U_old(i - 1, j) + U_old(i + 1, j) + U_old(i, j - 1) + U_old(i, j + 1) - h * h * F(i, j));
-                }
-            }
-            
-            // Update up ghost row
-            if(p_config.rank_up != MPI_PROC_NULL){
-                #pragma omp parallel for
-                for(Index j = 1; j < cols-1; ++j){
-                    U(0, j) = 0.25 * (ghost_row_up[j] + U_old(1, j) + U_old(0, j-1) + U_old(0, j+1) - h*h * F(0, j));
-                }
-            }
+                    Index global_i = p_config.start_row + i;
+                    if(global_i == 0 || global_i == s_config.N - 1){
+                        continue;
+                    }
 
-            // Update down ghost row
-            if(p_config.rank_down != MPI_PROC_NULL){
-                #pragma omp parallel for
-                for(Index j = 1; j < cols-1; ++j){
-                    U(rows-1, j) = 0.25 * (U_old(rows-2, j) + ghost_row_down[j] + U_old(rows-1, j-1) + U_old(rows-1, j+1) - h*h * F(rows-1, j));
+                    Real up_value = (i == 0) ? ghost_row_up[j] : U_old(i - 1, j);
+                    Real down_value = (i == rows - 1) ? ghost_row_down[j] : U_old(i + 1, j);
+
+                    U(i, j) = 0.25 * (up_value + down_value + U_old(i, j - 1) + U_old(i, j + 1) + h * h * F(i, j));
                 }
             }
 

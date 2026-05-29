@@ -60,9 +60,7 @@ int main(int argc, char** argv) {
 
     Laplace::Solver solver(s_config, p_config);
     solver.solve();
-    if (p_config.rank == 0) {
-        solver.convert_to_vtk("solution.vtk");
-    }
+    solver.convert_to_vtk("solution.vtk");
     
     if(rank == 0)
     {
