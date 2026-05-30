@@ -47,7 +47,6 @@ int main(int argc, char** argv){
     std::vector<Laplace::Real> errors(4);
 
     try {
-        // 1. Parsiamo i dati UNA SOLA VOLTA fuori dal ciclo!
         Laplace::SolverConfig s_config = Laplace::process_data(data_vec);
 
         if(rank == 0){
@@ -55,7 +54,6 @@ int main(int argc, char** argv){
         }
 
         for(Laplace::Index k = 4; k < 8; ++k){
-            // Aggiorniamo solo la dimensione della griglia
             s_config.N = std::pow(2, k);
             
             Laplace::ParallelConfig p_config = Laplace::process_parallel_config(s_config.N);
@@ -65,14 +63,12 @@ int main(int argc, char** argv){
             
             errors[k-4] = solver.compute_error();
 
-            // Stampiamo in tempo reale man mano che i test finiscono
             if(rank == 0){
                 std::cout << s_config.N << "\t" << errors[k-4] << "\n";
             }
         }
     }
     catch (mu::Parser::exception_type &e) {
-        // 2. Se muParser crasha, stampiamo il messaggio di errore vero e proprio!
         std::cerr << "[Rank " << rank << "] muParser Error: " << e.GetMsg() 
                   << " (nell'espressione: " << e.GetExpr() << ")" << std::endl;
         MPI_Abort(MPI_COMM_WORLD, 1);
