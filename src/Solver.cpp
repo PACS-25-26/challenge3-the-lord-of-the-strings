@@ -261,4 +261,27 @@ namespace Laplace{
         MPI_Bcast(&consistent, 1, MPI_INT, 0, MPI_COMM_WORLD);
         return consistent == 1;
     }
+
+    Real Solver::compute_error(){
+        Index rows = p_config.loc_rows;
+        Index cols = p_config.loc_cols;
+        Real h = s_config.h;
+
+        Real local_error = .0;
+
+        auto u_ex = s_config.u_ex;
+
+        for(Index i = 0; i < rows; ++i){
+            for(Index j = 0; j < cols; ++j){
+                Index global_i = p_config.start_row + i;
+                Laplace::Coord coord = {j * h, global_i * h};
+                Real diff = U(i, j) - u_ex(coord);
+                local_error += h * h * diff * diff;
+            }
+        }
+
+        Real global_error = .0;
+        MPI_Allreduce(&local_error, &global_error, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+        return std::sqrt(global_error);
+    }
 }

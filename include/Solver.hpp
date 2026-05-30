@@ -104,5 +104,12 @@
              * and writes it to a VTK file for visualization.
              */
             void convert_to_vtk(const std::string& file_name);
-    };
+    
+            /**
+             * @brief Computes the error of the numerical solution compared to the exact one.
+             * @return The computed error.
+             * @details This function evaluate the error in L2 norm, with the exact solution given as an input in the file test_case.cfg.
+             */
+            Real compute_error();
+        };
  }

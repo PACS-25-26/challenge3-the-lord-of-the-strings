@@ -92,3 +92,21 @@ target_link_libraries(${TEST_EXECUTABLE} PRIVATE
     ${MUPARSER_LIBRARY}
     benchmark::benchmark
 )
+
+add_executable(convergence_test
+    test/convergence_test.cpp
+    src/Solver.cpp
+    src/DataManager.cpp
+)
+
+target_include_directories(convergence_test PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${MUPARSER_INCLUDE_DIR}
+)
+
+target_link_libraries(convergence_test PRIVATE
+    MPI::MPI_CXX
+    OpenMP::OpenMP_CXX
+    Eigen3::Eigen          
+    ${MUPARSER_LIBRARY}
+)
