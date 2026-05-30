@@ -47,6 +47,10 @@
              */
             ParallelConfig p_config;
             
+            size_t converge_iter = 0; ///< Number of iterations required for convergence, used for performance analysis.
+
+            bool converged = false; ///< Flag indicating whether the solver has converged, used to control the iterative process in the solve() method.
+
             /**
              * @brief Initializes the solver based on the provided configurations.
              * @details This function sets up initial conditions, and is called by both constructors to ensure that the solver is properly initialized regardless of how it is constructed.
@@ -111,5 +115,9 @@
              * @details This function evaluate the error in L2 norm, with the exact solution given as an input in the file test_case.cfg.
              */
             Real compute_error();
+
+            void print_number_of_iterations() const;
+
+            inline bool get_convergence_status() const { return converged; }
         };
  }

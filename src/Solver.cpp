@@ -42,7 +42,6 @@ namespace Laplace{
         Matrix U_old = U;
 
         size_t it = 0;
-        bool converged = false;
 
         while(!converged && it < max_it){
             // Exchaning ghost rows with neighbours (handle also the case MPI_PROC_NULL)
@@ -73,19 +72,20 @@ namespace Laplace{
             U_old = U;
             ++it;
         }
-
-        if(p_config.rank == 0){
-            if(converged){
-                std::cout << "Converged in " << it << " iterations." << std::endl;
-            }
-            else{
-                std::cout << "Did not converge after " << max_it << " iterations." << std::endl;
-            }
-        }
-
+        converge_iter = it;
     }
 
-    // Possibile aggiornamento: aggiungi parametro local_count in p_config e usalo per evitare di fare 
+    void Solver::print_number_of_iterations() const{
+        if(p_config.rank == 0){
+            if(converged){
+                std::cout << "Converged in " << converge_iter << " iterations." << std::endl;
+            }
+            else{
+                std::cout << "Did not converge after " << s_config.max_it << " iterations." << std::endl;
+            }
+        }
+    }
+
     void Solver::convert_to_vtk(const std::string& file_name){
         Index cols = p_config.loc_cols; ///< Global number of columns (same for all processes)
 
