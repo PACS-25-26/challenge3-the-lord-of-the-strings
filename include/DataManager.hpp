@@ -12,7 +12,7 @@
  *  -# Exact solution
  *  -# Given source
  *  -# Dirichlet boundary conditions given in the following order:\n
- *   \f$ x = 0;\ x = 1;\ y = 0;\ y = 1. \f$
+ *   \f$ y = 1;\ x = 1;\ y = 0;\ x = 0. \f$
  * - Solver parameters
  *  -# The number of grid points in each dimension
  *  -# Grid spacing
@@ -35,10 +35,10 @@ namespace Laplace
     struct SolverConfig{
         Function u_ex; ///< exact solution
         Function f; ///< source
-        Function cond1; ///< Dirichlet condition x=0 
+        Function cond1; ///< Dirichlet condition y=1
         Function cond2; ///< Dirichlet condition x=1
         Function cond3; ///< Dirichlet condition y=0
-        Function cond4; ///< Dirichlet condition y=1
+        Function cond4; ///< Dirichlet condition x=0
         Index N; ///< Number of grid points in each dimension
         Real h; ///< Grid spacing
         Real tol; ///< Tolerance for convergence
@@ -57,8 +57,8 @@ namespace Laplace
         Index loc_rows; ///< Number of rows for the current process
         Index loc_cols; ///< Number of columns for the current process
 
-        int rank_up; ///< Rank of process above
-        int rank_down; ///< Rank of process below
+        int rank_up; ///< Rank of process above, towards y=1
+        int rank_down; ///< Rank of process below, towards y=0
     };
 
     /**

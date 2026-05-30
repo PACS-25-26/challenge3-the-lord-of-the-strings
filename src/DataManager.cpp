@@ -128,8 +128,8 @@ namespace Laplace
         // to avoid having to repeat these statements, we also save th einformation of which
         // rank goes before and after the current one. This will be useful when communicating 
         // adjacent data in the matrix calculations
-        p_config.rank_up = (rank == 0) ? MPI_PROC_NULL : rank - 1;
-        p_config.rank_down = (rank == size -1) ? MPI_PROC_NULL : rank + 1;
+        p_config.rank_down = (rank == 0) ? MPI_PROC_NULL : rank - 1;
+        p_config.rank_up = (rank == size -1) ? MPI_PROC_NULL : rank + 1;
         
         // Now we process the local rows of each process
         p_config.loc_cols = N;

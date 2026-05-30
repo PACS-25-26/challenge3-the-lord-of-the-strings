@@ -46,11 +46,11 @@ namespace Laplace{
 
         while(!converged && it < max_it){
             // Exchaning ghost rows with neighbours (handle also the case MPI_PROC_NULL)
-            MPI_Sendrecv(&U_old(0, 0), cols, MPI_DOUBLE, p_config.rank_up, 0,
-                        ghost_row_down.data(), cols, MPI_DOUBLE, p_config.rank_down, 0,
-                        MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            MPI_Sendrecv(&U_old(rows-1, 0), cols, MPI_DOUBLE, p_config.rank_down, 0,
+            MPI_Sendrecv(&U_old(0, 0), cols, MPI_DOUBLE, p_config.rank_down, 0,
                         ghost_row_up.data(), cols, MPI_DOUBLE, p_config.rank_up, 0,
+                        MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Sendrecv(&U_old(rows-1, 0), cols, MPI_DOUBLE, p_config.rank_up, 0,
+                        ghost_row_down.data(), cols, MPI_DOUBLE, p_config.rank_down, 0,
                         MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             
             // Update local rows using ghost values when the adjacent row lives on another rank.
@@ -62,8 +62,8 @@ namespace Laplace{
                         continue;
                     }
 
-                    Real up_value = (i == 0) ? ghost_row_up[j] : U_old(i - 1, j);
-                    Real down_value = (i == rows - 1) ? ghost_row_down[j] : U_old(i + 1, j);
+                    Real down_value = (i == 0) ? ghost_row_down[j] : U_old(i - 1, j);
+                    Real up_value = (i == rows - 1) ? ghost_row_up[j] : U_old(i + 1, j);
 
                     U(i, j) = 0.25 * (up_value + down_value + U_old(i, j - 1) + U_old(i, j + 1) + h * h * F(i, j));
                 }
@@ -136,8 +136,7 @@ namespace Laplace{
             vtk_file << "SCALARS U double 1\n";
             vtk_file << "LOOKUP_TABLE default\n";
 
-            for(Index r = 0; r < s_config.N; ++r){
-                Index i = s_config.N - 1 - r; // Reverse row order for VTK
+            for(Index i = 0; i < s_config.N; ++i){
                 for(Index j = 0; j < s_config.N; ++j){
                     vtk_file << U_global(i, j) << "\n";
                 }
@@ -182,29 +181,66 @@ namespace Laplace{
     }
 
     void Solver::apply_dirichlet_conditions(){
+        // Check the consistency of the Dirichlet boundary conditions before applying them
         if(!check_dirichlet_conditions()){
             if(p_config.rank == 0){
                 std::cerr << "Inconsistent Dirichlet boundary conditions. Aborting." << std::endl;
             }
             MPI_Abort(MPI_COMM_WORLD, 1);
         }
-        ;
+
+        auto cond1 = s_config.cond1; /// Top boundary condition (y = 1)
+        auto cond2 = s_config.cond2; /// Right boundary condition (x = 1)
+        auto cond3 = s_config.cond3; /// Bottom boundary condition (y = 0)
+        auto cond4 = s_config.cond4; /// Left boundary condition (x = 0)
+
+        Index loc_rows = p_config.loc_rows;
+        Index loc_cols = p_config.loc_cols;
+        Real h = s_config.h;
+
+        Index global_start_row = p_config.start_row;
+
+        // Update bottom row on its process. Global row 0 corresponds to y = 0.
+        if(p_config.rank == 0){
+            for(Index j = 1; j < loc_cols -1; ++j){
+                Laplace::Coord coord_bottom = {j * h, 0.0};
+                U(0, j) = cond3(coord_bottom);
+            }
+        }
+        
+        // Update top row on its process. Global row N - 1 corresponds to y = 1.
+        if(p_config.rank == p_config.size - 1){
+            for(Index j = 1; j < loc_cols -1; ++j){
+                Laplace::Coord coord_top = {j * h, 1.0};
+                U(loc_rows - 1, j) = cond1(coord_top);
+            }
+        }
+        
+        // Update left and right columns on their processes
+        for(Index i = 0; i < loc_rows; ++i){
+            Index global_i = global_start_row + i;
+
+            Laplace::Coord coord_left = {0.0, (global_i) * h};
+            Laplace::Coord coord_right = {1.0, (global_i) * h};
+            U(i, 0) = cond4(coord_left);
+            U(i, loc_cols - 1) = cond2(coord_right);
+        }
     }
 
     bool Solver::check_dirichlet_conditions(){
         int consistent = 1;
         if(p_config.rank == 0){
-            auto cond1 = s_config.cond1; ///< Top boundary condition
-            auto cond2 = s_config.cond2; ///< Right boundary condition
-            auto cond3 = s_config.cond3; ///< Bottom boundary condition
-            auto cond4 = s_config.cond4; ///< Left boundary condition
+            auto cond1 = s_config.cond1; /// Top boundary condition
+            auto cond2 = s_config.cond2; /// Right boundary condition
+            auto cond3 = s_config.cond3; /// Bottom boundary condition
+            auto cond4 = s_config.cond4; /// Left boundary condition
 
             Laplace::Coord top_left = {0.0, 1.0};
             Laplace::Coord top_right = {1.0, 1.0};
             Laplace::Coord bottom_left = {0.0, 0.0};
             Laplace::Coord bottom_right = {1.0, 0.0};
 
-            Real tol = 1e-10; ///< Tolerance for checking consistency of boundary conditions
+            Real tol = 1e-10; /// Tolerance for checking consistency of boundary conditions
             if(std::abs(cond1(top_left) - cond4(top_left)) > tol){
                 std::cerr << "Inconsistent boundary conditions at top-left corner" << std::endl;
                 consistent = 0;
@@ -225,5 +261,4 @@ namespace Laplace{
         MPI_Bcast(&consistent, 1, MPI_INT, 0, MPI_COMM_WORLD);
         return consistent == 1;
     }
-    
 }
