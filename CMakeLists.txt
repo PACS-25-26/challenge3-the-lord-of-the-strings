@@ -54,26 +54,6 @@ add_custom_command(
     COMMENT "Syncing data.txt to build directory"
 )
 
-# Test executable
-set(TEST_EXECUTABLE laplace_test)
-
-file(GLOB TEST_SOURCES "test/*.cpp")
-file(GLOB SOLVER_SOURCES "src/*.cpp")
-
-add_executable(${TEST_EXECUTABLE} ${TEST_SOURCES} ${SOLVER_SOURCES})
-
-target_include_directories(${TEST_EXECUTABLE} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${MUPARSER_INCLUDE_DIR}
-)
-
-target_link_libraries(${TEST_EXECUTABLE} PRIVATE
-    MPI::MPI_CXX
-    OpenMP::OpenMP_CXX
-    Eigen3::Eigen          
-    ${MUPARSER_LIBRARY}
-)
-
 # Setup of Google Benchmark
 include(FetchContent)
 FetchContent_Declare(
@@ -85,12 +65,44 @@ FetchContent_Declare(
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable benchmark testing" FORCE)
 FetchContent_MakeAvailable(googlebenchmark)
 
-target_link_libraries(${TEST_EXECUTABLE} PRIVATE
+add_executable(test1_benchmark
+    test/test1.cpp
+)
+
+target_include_directories(test1_benchmark PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_link_libraries(test1_benchmark PRIVATE
+    Eigen3::Eigen
+    benchmark::benchmark
+)
+
+add_executable(seqpar_test
+    test/seqpar_test.cpp
+    src/Solver.cpp
+    src/DataManager.cpp
+)
+
+target_include_directories(seqpar_test PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${MUPARSER_INCLUDE_DIR}
+)
+
+target_link_libraries(seqpar_test PRIVATE
     MPI::MPI_CXX
     OpenMP::OpenMP_CXX
     Eigen3::Eigen          
     ${MUPARSER_LIBRARY}
     benchmark::benchmark
+)
+
+add_custom_command(
+    TARGET seqpar_test POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/test_case.cfg
+        ${CMAKE_CURRENT_BINARY_DIR}/test_case.cfg
+    COMMENT "Syncing test_case.cfg to build directory"
 )
 
 add_executable(convergence_test
