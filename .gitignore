@@ -49,6 +49,7 @@ CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+Dockerfile
 install_manifest.txt
 compile_commands.json
 
@@ -67,3 +68,18 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# IDE specific files
+/.vscode/
+
+# Local docker container configuration
+.devcontainer/
+
+# gitignore
+.gitignore
+
+# google benchmark files
+_deps
+
+.agents
+.codex
