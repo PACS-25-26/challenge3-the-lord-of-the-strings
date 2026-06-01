@@ -87,7 +87,7 @@ namespace Laplace{
 
     // Possibile aggiornamento: aggiungi parametro local_count in p_config e usalo per evitare di fare 
     void Solver::convert_to_vtk(const std::string& file_name){
-        Index cols = p_config.loc_cols; ///< Global number of columns (same for all processes)
+        Index cols = p_config.loc_cols; // Global number of columns (same for all processes)
 
         // Gather global matrix on root process
         Matrix U_global;
@@ -150,17 +150,17 @@ namespace Laplace{
         s_config; // = Mettere funzione per inizializzare;
         p_config; //  = Mettere funzione per inizializzare
         
-        setup(); ///< Initialize the solver based on the provided configurations
+        setup(); // Initialize the solver based on the provided configurations
     }
 
     Solver::Solver(const SolverConfig& s, const ParallelConfig& p) : s_config(s), p_config(p){
-        setup();/// < Initialize the solver based on the provided configurations
+        setup(); // Initialize the solver based on the provided configurations
     }
 
     void Solver::setup(){
         Index rows = p_config.loc_rows;
         Index cols = p_config.loc_cols; 
-        s_config.h = 1.0 / (s_config.N - 1); ///< Compute grid spacing based on the number of grid points
+        s_config.h = 1.0 / (s_config.N - 1); // Compute grid spacing based on the number of grid points
         auto h = s_config.h;
 
         U.resize(rows, cols);
@@ -170,11 +170,11 @@ namespace Laplace{
 
         auto f_force = s_config.f;
 
-        /// Initialize the source term F based on source function
+        // Initialize the source term F based on source function
         for(Index i = 0; i < rows; ++i){
-            Index k = p_config.start_row + i; ///< Global row index
+            Index k = p_config.start_row + i; // Global row index
             for(Index j = 0; j < cols; ++j){
-                Laplace::Coord coord = {j * h, k * h}; ///< Compute the coordinates of the grid point
+                Laplace::Coord coord = {j * h, k * h}; // Compute the coordinates of the grid point
                 F(i,j) = f_force(coord);
             }
         }
@@ -189,10 +189,10 @@ namespace Laplace{
             MPI_Abort(MPI_COMM_WORLD, 1);
         }
 
-        auto cond1 = s_config.cond1; /// Top boundary condition (y = 1)
-        auto cond2 = s_config.cond2; /// Right boundary condition (x = 1)
-        auto cond3 = s_config.cond3; /// Bottom boundary condition (y = 0)
-        auto cond4 = s_config.cond4; /// Left boundary condition (x = 0)
+        auto cond1 = s_config.cond1; // Top boundary condition (y = 1)
+        auto cond2 = s_config.cond2; // Right boundary condition (x = 1)
+        auto cond3 = s_config.cond3; // Bottom boundary condition (y = 0)
+        auto cond4 = s_config.cond4; // Left boundary condition (x = 0)
 
         Index loc_rows = p_config.loc_rows;
         Index loc_cols = p_config.loc_cols;
@@ -230,17 +230,17 @@ namespace Laplace{
     bool Solver::check_dirichlet_conditions(){
         int consistent = 1;
         if(p_config.rank == 0){
-            auto cond1 = s_config.cond1; /// Top boundary condition
-            auto cond2 = s_config.cond2; /// Right boundary condition
-            auto cond3 = s_config.cond3; /// Bottom boundary condition
-            auto cond4 = s_config.cond4; /// Left boundary condition
+            auto cond1 = s_config.cond1; // Top boundary condition
+            auto cond2 = s_config.cond2; // Right boundary condition
+            auto cond3 = s_config.cond3; // Bottom boundary condition
+            auto cond4 = s_config.cond4; // Left boundary condition
 
             Laplace::Coord top_left = {0.0, 1.0};
             Laplace::Coord top_right = {1.0, 1.0};
             Laplace::Coord bottom_left = {0.0, 0.0};
             Laplace::Coord bottom_right = {1.0, 0.0};
 
-            Real tol = 1e-10; /// Tolerance for checking consistency of boundary conditions
+            Real tol = 1e-10; // Tolerance for checking consistency of boundary conditions
             if(std::abs(cond1(top_left) - cond4(top_left)) > tol){
                 std::cerr << "Inconsistent boundary conditions at top-left corner" << std::endl;
                 consistent = 0;

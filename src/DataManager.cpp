@@ -112,6 +112,19 @@ namespace Laplace
         configs.tol = std::stod(s_vec[7]);
         configs.max_it = std::stoul(s_vec[8]);
 
+        // managing some possible invalid inputs
+        if(configs.N < 2)
+        {
+            throw std::runtime_error("N must be at least 2 to form a grid !");
+        }
+        if(configs.tol <= 0)
+        {
+            throw std::runtime_error("Tolerance must be positive !");
+        }
+        if(configs.max_it == 0)
+        {
+            throw std::runtime_error("Maximum number of iterations must be greater than 0 !");
+        }
         return configs;
     }
 
@@ -124,6 +137,10 @@ namespace Laplace
         MPI_Comm_size(MPI_COMM_WORLD, &size);
         p_config.rank = rank;
         p_config.size = size;
+
+        if(size > N){
+            throw std::runtime_error("Number of processes cannot be greater than the number of grid points N !");
+        }
 
         // to avoid having to repeat these statements, we also save th einformation of which
         // rank goes before and after the current one. This will be useful when communicating 
