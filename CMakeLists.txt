@@ -27,32 +27,69 @@ if(NOT MUPARSER_INCLUDE_DIR OR NOT MUPARSER_LIBRARY)
 endif()
 
 # Executable
-add_executable(test_parser
+add_executable( solver_run
     main.cpp
     src/Solver.cpp
     src/DataManager.cpp
 )
 
-target_include_directories(test_parser PRIVATE
+target_include_directories(solver_run PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${MUPARSER_INCLUDE_DIR}
 )
 
-target_link_libraries(test_parser PRIVATE
+target_link_libraries(solver_run PRIVATE
     MPI::MPI_CXX
     OpenMP::OpenMP_CXX
     Eigen3::Eigen          
     ${MUPARSER_LIBRARY}
 )
 
-# Copy cfg file into build directory
-add_custom_command(
-    TARGET test_parser POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/test_case.cfg
-        ${CMAKE_CURRENT_BINARY_DIR}/test_case.cfg
-    COMMENT "Syncing data.txt to build directory"
+# Link runtime configuration files into the build directory.
+# This keeps commands run from build/ simple without letting cfg copies go stale.
+add_custom_target(cfg_links ALL
+    COMMAND ${CMAKE_COMMAND} -E rm -f
+        ${CMAKE_CURRENT_BINARY_DIR}/gandalf_the_white.cfg
+        ${CMAKE_CURRENT_BINARY_DIR}/gandalf_the_grey.cfg
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+        ${CMAKE_CURRENT_SOURCE_DIR}/gandalf_the_white.cfg
+        ${CMAKE_CURRENT_BINARY_DIR}/gandalf_the_white.cfg
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+        ${CMAKE_CURRENT_SOURCE_DIR}/gandalf_the_grey.cfg
+        ${CMAKE_CURRENT_BINARY_DIR}/gandalf_the_grey.cfg
+    COMMENT "Linking runtime configuration files into build directory"
 )
+add_dependencies(solver_run cfg_links)
+
+set(GANDALF_THE_WHITE_CFG "${CMAKE_CURRENT_SOURCE_DIR}/gandalf_the_white.cfg")
+set(GANDALF_THE_GREY_CFG  "${CMAKE_CURRENT_SOURCE_DIR}/gandalf_the_grey.cfg")
+set(LAPLACE_MPI_PROCS 1 CACHE STRING "Number of MPI processes used by the run targets")
+if(NOT MPIEXEC_EXECUTABLE)
+    set(MPIEXEC_EXECUTABLE mpiexec)
+endif()
+if(NOT MPIEXEC_NUMPROC_FLAG)
+    set(MPIEXEC_NUMPROC_FLAG -n)
+endif()
+
+function(add_laplace_run_target target_name executable_target cfg_file)
+    add_custom_target(${target_name}
+        COMMAND ${MPIEXEC_EXECUTABLE}
+                ${MPIEXEC_NUMPROC_FLAG} ${LAPLACE_MPI_PROCS}
+                $<TARGET_FILE:${executable_target}>
+                ${cfg_file}
+        DEPENDS ${executable_target}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Running ${target_name} with ${cfg_file}"
+        USES_TERMINAL
+    )
+endfunction()
+
+add_laplace_run_target(run_white solver_run ${GANDALF_THE_WHITE_CFG})
+add_laplace_run_target(run_grey  solver_run ${GANDALF_THE_GREY_CFG})
+add_laplace_run_target(run_gandalf_the_white solver_run ${GANDALF_THE_WHITE_CFG})
+add_laplace_run_target(run_gandalf_the_grey  solver_run ${GANDALF_THE_GREY_CFG})
+add_laplace_run_target(gandalf_the_white solver_run ${GANDALF_THE_WHITE_CFG})
+add_laplace_run_target(gandalf_the_grey  solver_run ${GANDALF_THE_GREY_CFG})
 
 # Setup of Google Benchmark
 include(FetchContent)
@@ -64,19 +101,6 @@ FetchContent_Declare(
 
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable benchmark testing" FORCE)
 FetchContent_MakeAvailable(googlebenchmark)
-
-add_executable(test1_benchmark
-    test/test1.cpp
-)
-
-target_include_directories(test1_benchmark PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-
-target_link_libraries(test1_benchmark PRIVATE
-    Eigen3::Eigen
-    benchmark::benchmark
-)
 
 add_executable(seqpar_test
     test/seqpar_test.cpp
@@ -97,14 +121,6 @@ target_link_libraries(seqpar_test PRIVATE
     benchmark::benchmark
 )
 
-add_custom_command(
-    TARGET seqpar_test POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/test_case.cfg
-        ${CMAKE_CURRENT_BINARY_DIR}/test_case.cfg
-    COMMENT "Syncing test_case.cfg to build directory"
-)
-
 add_executable(convergence_test
     test/convergence_test.cpp
     src/Solver.cpp
@@ -122,3 +138,8 @@ target_link_libraries(convergence_test PRIVATE
     Eigen3::Eigen          
     ${MUPARSER_LIBRARY}
 )
+
+add_laplace_run_target(convergence_white convergence_test ${GANDALF_THE_WHITE_CFG})
+add_laplace_run_target(convergence_grey  convergence_test ${GANDALF_THE_GREY_CFG})
+add_laplace_run_target(convergence_gandalf_the_white convergence_test ${GANDALF_THE_WHITE_CFG})
+add_laplace_run_target(convergence_gandalf_the_grey  convergence_test ${GANDALF_THE_GREY_CFG})

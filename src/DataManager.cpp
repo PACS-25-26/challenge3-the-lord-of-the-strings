@@ -113,9 +113,9 @@ namespace Laplace
         configs.max_it = std::stoul(s_vec[8]);
 
         // managing some possible invalid inputs
-        if(configs.N < 2)
+        if(configs.N < 3)
         {
-            throw std::runtime_error("N must be at least 2 to form a grid !");
+            throw std::runtime_error("N must be at least 3 to form a grid with internal nodes!");
         }
         if(configs.tol <= 0)
         {

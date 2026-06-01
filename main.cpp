@@ -63,28 +63,6 @@ int main(int argc, char** argv) {
     solver.print_number_of_iterations();
     solver.convert_to_vtk("solution.vtk");
     
-    if(rank == 0)
-    {
-    // for testing, we can evaluate the exact solution and the forcing term at some points to check if they are correct.
-    Laplace::Function exact_sol = s_config.u_ex;
-    Laplace::Function f_forcing = s_config.f;
-    
-    Laplace::Coord coords = {0.0, 0.0};
-
-    Laplace::Coord punto1 = {0.25, 0.25};
-    Laplace::Coord punto2 = {0.5, 0.5};
-
-    std::cout << "\n--- Test Punto 1 (x=0.25, y=0.25) ---" << std::endl;
-    std::cout << "Soluzione Esatta: " << exact_sol(punto1) << " (Dovrebbe essere 1)" << std::endl;
-    std::cout << "Forzante F:       " << f_forcing(punto1) << " (Dovrebbe essere ~78)" << std::endl;
-
-    std::cout << "\n--- Test Punto 2 (x=0.5, y=0.5) ---" << std::endl;
-    std::cout << "Soluzione Esatta: " << exact_sol(punto2) << " (Dovrebbe essere 0.0)" << std::endl;
-    std::cout << "Forzante F:       " << f_forcing(punto2) << " (Dovrebbe essere ~0.0)" << std::endl;
-    
-    std::cout << "\n================================================" << std::endl;
-    }
-
     MPI_Finalize();
     return 0;
 }
