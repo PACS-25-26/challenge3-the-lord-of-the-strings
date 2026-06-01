@@ -60,6 +60,7 @@ int main(int argc, char** argv) {
 
     Laplace::Solver solver(s_config, p_config);
     solver.solve();
+    solver.print_number_of_iterations();
     solver.convert_to_vtk("solution.vtk");
     
     if(rank == 0)
