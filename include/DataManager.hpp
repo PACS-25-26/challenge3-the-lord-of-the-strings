@@ -1,4 +1,4 @@
-/**
+c/**
  * @file DataManager.hpp
  * @author Elena Cassano and David Laurenti
  * @brief This file contains all useful structures and functions to manage
@@ -97,11 +97,9 @@ namespace Laplace
     SolverConfig process_data(const std::vector<std::string>& s_vec);
 
     /**
-     * @brief Function that creates struct of parallel configuration from provided solver configuration.
-     * @details The function calculates the local grid dimensions and neighboring process ranks based on the global solver configuration and the rank of the current process.
-     * @param s_config The solver configuration struct
-     * @param rank The rank of the current process
-     * @param size The total number of processes
+     * @brief Function that creates struct of parallel configuration from the global grid size.
+     * @details The function calculates the local grid dimensions and neighboring process ranks based on the global grid size and MPI communicator data.
+     * @param N The global grid size
      * @return data struct with all the parallel configuration parameters properly stored.
      */
     ParallelConfig process_parallel_config(Index N);

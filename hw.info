@@ -6,3 +6,14 @@ Model name:                              11th Gen Intel(R) Core(TM) i7-1195G7 @ 
 Mem:            15Gi       4.4Gi       7.4Gi       1.0Gi       4.9Gi        10Gi
 Swap:          2.0Gi          0B       2.0Gi
 
+========================================================================================
+
+Hardware overview:
+
+
+      Model Identifier: Mac15,12
+      Chip: Apple M3
+      Total Number of Cores: 8 (4 performance and 4 efficiency)
+      Memory: 16 GB
+      Chipset Model: Apple M3
+      Total Number of Cores: 10

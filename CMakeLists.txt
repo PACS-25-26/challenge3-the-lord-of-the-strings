@@ -146,26 +146,37 @@ add_laplace_run_target(convergence_gandalf_the_grey  convergence_test ${GANDALF_
 
 find_package(Doxygen QUIET)
 
+find_program(DOC_OPEN_COMMAND NAMES xdg-open open)
+
 if(DOXYGEN_FOUND)
     add_custom_target(doc
         COMMAND ${DOXYGEN_EXECUTABLE} -g Doxyfile
-        
         COMMAND sed -i "s/^PROJECT_NAME[[:space:]]*=.*/PROJECT_NAME = \"Lord of the Strings\"/" Doxyfile
-        COMMAND sed -i "s|^INPUT[[:space:]]*=.*|INPUT = ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include|" Doxyfile
+        
+        # 1. Update the INPUT to include README.md
+        COMMAND sed -i "s|^INPUT[[:space:]]*=.*|INPUT = ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/README.md|" Doxyfile
+        
+        # 2. Add the command to use README.md as the main page
+        COMMAND sed -i "s|^USE_MDFILE_AS_MAINPAGE[[:space:]]*=.*|USE_MDFILE_AS_MAINPAGE = ${CMAKE_CURRENT_SOURCE_DIR}/README.md|" Doxyfile
+        
         COMMAND sed -i "s/^FILE_PATTERNS[[:space:]]*=.*/FILE_PATTERNS = *.cpp *.hpp *.tpp/" Doxyfile
         COMMAND sed -i "s/^RECURSIVE[[:space:]]*=.*/RECURSIVE = YES/" Doxyfile
         COMMAND sed -i "s/^EXTRACT_ALL[[:space:]]*=.*/EXTRACT_ALL = YES/" Doxyfile
         COMMAND sed -i "s/^HAVE_DOT[[:space:]]*=.*/HAVE_DOT = YES/" Doxyfile
         COMMAND sed -i "s|^OUTPUT_DIRECTORY[[:space:]]*=.*|OUTPUT_DIRECTORY = ${CMAKE_CURRENT_BINARY_DIR}/doc|" Doxyfile
-        
         COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
-        
-        COMMAND xdg-open ${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html
-        
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Generazione della documentazione 100% automatica..."
+        COMMENT "Generating documentation ..."
         VERBATIM
     )
+    if(DOC_OPEN_COMMAND)
+        add_custom_target(doc_open
+            COMMAND ${DOC_OPEN_COMMAND} ${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html
+            DEPENDS doc
+            COMMENT "Opening HTML documentation..."
+            VERBATIM
+        )
+    endif()
 else()
-    message(WARNING "Doxygen non trovato sul sistema. Il target 'make doc' è disattivato.")
+    message(WARNING "Doxygen not found on system. Documentation target will not be available.")
 endif()
