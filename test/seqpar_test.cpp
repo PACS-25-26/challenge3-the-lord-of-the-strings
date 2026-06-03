@@ -63,8 +63,8 @@ static void BM_SolverOpenMP(benchmark::State& state)
 }
 }
 
-BENCHMARK(BM_SolverSequential)->RangeMultiplier(2)->Range(16, 64)->Unit(benchmark::kMillisecond);
-BENCHMARK(BM_SolverOpenMP)->RangeMultiplier(2)->Range(16, 64)->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_SolverSequential)->RangeMultiplier(2)->Range(16, 256)->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_SolverOpenMP)->RangeMultiplier(2)->Range(16, 256)->Unit(benchmark::kMillisecond);
 
 int main(int argc, char** argv)
 {

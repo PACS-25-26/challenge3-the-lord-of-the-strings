@@ -1,0 +1,8 @@
+Description:	Linux Mint 22.3
+=== CPU ===
+Model name:                              11th Gen Intel(R) Core(TM) i7-1195G7 @ 2.90GHz
+=== RAM ===
+               total        utiliz     liber     condiv buff/cache   disponibile
+Mem:            15Gi       4.4Gi       7.4Gi       1.0Gi       4.9Gi        10Gi
+Swap:          2.0Gi          0B       2.0Gi
+
