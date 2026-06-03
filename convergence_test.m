@@ -1,0 +1,79 @@
+close all; clear all; clc;
+
+% Extracted data
+N = [16; 32; 64; 128];
+errore_h = [0.00737541; 0.00171521; 0.000414652; 0.000101998];
+errore_nh = [0.00700064; 0.00162808; 0.000393586; 9.68168e-05];
+   
+% Evaluation of h
+h = 1 ./ (N - 1);
+
+% Fitting linearly in log-log space to find the experimental order of convergence
+p_h = polyfit(log(h), log(errore_h), 1);
+pendenza_sperimentale_h = p_h(1);
+
+p_nh = polyfit(log(h), log(errore_nh), 1);
+pendenza_sperimentale_nh = p_nh(1);
+
+
+% Printing the experimental order of convergence
+fprintf('=====================================================\n');
+fprintf('Experimental Slope, homogeneous (Order): %.4f\n', pendenza_sperimentale_h);
+fprintf('=====================================================\n');
+
+% Printing the experimental order of convergence
+fprintf('=====================================================\n');
+fprintf('Experimental Slope, non-homogeneous (Order): %.4f\n', pendenza_sperimentale_nh);
+fprintf('=====================================================\n');
+
+
+%%  ---------- CONVERGENCE PLOT ----------
+figure('Color', 'w');
+
+% ------------- HOMOGENEOUS ----------------
+
+subplot(1,2,1);
+
+% Plotting data
+loglog(h, errore_h, 'o-', 'LineWidth', 2, 'MarkerSize', 8, 'Color', [0.85 0.55 0.10], 'DisplayName', 'Error L_2 Experimental');
+hold on;
+
+% Generation of the theoretical convergence line (O(h^2))
+errore_teorico_h = h.^2 * (errore_h(1) / h(1)^2); 
+loglog(h, errore_teorico_h, '--', 'LineWidth', 1.5, 'Color', 'k', 'DisplayName', 'Theoretical Slope O(h^2)');
+
+% Some plot settings
+grid on; box on;
+ax = gca;
+ax.GridLineStyle = ':';
+ax.GridAlpha = 0.6;
+
+xlabel('Grid Spacing h', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Error in L_2 Norm', 'FontSize', 12, 'FontWeight', 'bold');
+title('Homogeneous BC case', 'FontSize', 14);
+legend('Location', 'northwest', 'FontSize', 11);
+
+% ------------- NON HOMOGENEOUS ----------------
+
+subplot(1,2,2);
+
+% Plotting data
+loglog(h, errore_nh, 'o-', 'LineWidth', 2, 'MarkerSize', 8, 'Color', [0.85 0.55 0.10], 'DisplayName', 'Error L_2 Experimental');
+hold on;
+
+% Generation of the theoretical convergence line (O(h^2))
+errore_teorico_nh = h.^2 * (errore_nh(1) / h(1)^2); 
+loglog(h, errore_teorico_nh, '--', 'LineWidth', 1.5, 'Color', 'k', 'DisplayName', 'Theoretical Slope O(h^2)');
+
+% Some plot settings
+grid on; box on;
+ax = gca;
+ax.GridLineStyle = ':';
+ax.GridAlpha = 0.6;
+
+xlabel('Grid Spacing h', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Error in L_2 Norm', 'FontSize', 12, 'FontWeight', 'bold');
+title('Non-homogeneous BC case', 'FontSize', 14);
+legend('Location', 'northwest', 'FontSize', 11);
+
+sgtitle('Convergence Test (Jacobi vs Analytical)', 'FontSize', 16);
