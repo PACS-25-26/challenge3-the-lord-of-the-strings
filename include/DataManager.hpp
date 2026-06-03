@@ -1,4 +1,4 @@
-c/**
+/**
  * @file DataManager.hpp
  * @author Elena Cassano and David Laurenti
  * @brief This file contains all useful structures and functions to manage
