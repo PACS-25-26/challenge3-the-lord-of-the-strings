@@ -4,13 +4,14 @@
 #include <algorithm>
 #include <benchmark/benchmark.h>
 #include <omp.h>
+#include <string>
+#include <vector>
 
 namespace {
 int openmp_threads = 1;
-
 Laplace::SolverConfig make_solver_config(int N)
 {
-    std::string file_path = "test_case.cfg";
+    std::string file_path = "gandalf_the_white.cfg";
     std::vector<std::string> raw_data = Laplace::read_data(file_path);
     Laplace::SolverConfig s_config = Laplace::process_data(raw_data);
 
