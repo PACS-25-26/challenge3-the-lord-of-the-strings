@@ -10,9 +10,9 @@ Let's see the plots of the results of the homogeneous and non-homogeneous soluti
 paraview solution.vtk &
 ```
 
-![[Par_homo.png]]
-![[Par_nonhomo.png]]
-./
+![Homogeneous](images/Par_homo.png)
+![Non homogeneous](images/Par_nonhomo.png)
+
 The exact solution are:
 - $\sin(2\pi x)\sin(2\pi y)$ for the homogeneous case
 - $\exp(x+y) + \sin(\pi x)\cos(2\pi y)$ for the non homogeneous case
@@ -35,7 +35,7 @@ N       Error
 
 We made a simple Matlab script to visualize the order of convergence
 
-![[Pasted image 20260603120944.png]]
+![Matlab plot](images/Figure_1.png)
 ```
 =====================================================
 Experimental Slope, homogeneous (Order): 2.0039

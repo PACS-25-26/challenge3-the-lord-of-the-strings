@@ -143,3 +143,29 @@ add_laplace_run_target(convergence_white convergence_test ${GANDALF_THE_WHITE_CF
 add_laplace_run_target(convergence_grey  convergence_test ${GANDALF_THE_GREY_CFG})
 add_laplace_run_target(convergence_gandalf_the_white convergence_test ${GANDALF_THE_WHITE_CFG})
 add_laplace_run_target(convergence_gandalf_the_grey  convergence_test ${GANDALF_THE_GREY_CFG})
+
+find_package(Doxygen QUIET)
+
+if(DOXYGEN_FOUND)
+    add_custom_target(doc
+        COMMAND ${DOXYGEN_EXECUTABLE} -g Doxyfile
+        
+        COMMAND sed -i "s/^PROJECT_NAME[[:space:]]*=.*/PROJECT_NAME = \"Lord of the Strings\"/" Doxyfile
+        COMMAND sed -i "s|^INPUT[[:space:]]*=.*|INPUT = ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include|" Doxyfile
+        COMMAND sed -i "s/^FILE_PATTERNS[[:space:]]*=.*/FILE_PATTERNS = *.cpp *.hpp *.tpp/" Doxyfile
+        COMMAND sed -i "s/^RECURSIVE[[:space:]]*=.*/RECURSIVE = YES/" Doxyfile
+        COMMAND sed -i "s/^EXTRACT_ALL[[:space:]]*=.*/EXTRACT_ALL = YES/" Doxyfile
+        COMMAND sed -i "s/^HAVE_DOT[[:space:]]*=.*/HAVE_DOT = YES/" Doxyfile
+        COMMAND sed -i "s|^OUTPUT_DIRECTORY[[:space:]]*=.*|OUTPUT_DIRECTORY = ${CMAKE_CURRENT_BINARY_DIR}/doc|" Doxyfile
+        
+        COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
+        
+        COMMAND xdg-open ${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html
+        
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generazione della documentazione 100% automatica..."
+        VERBATIM
+    )
+else()
+    message(WARNING "Doxygen non trovato sul sistema. Il target 'make doc' è disattivato.")
+endif()
