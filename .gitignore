@@ -83,3 +83,5 @@ _deps
 
 .agents
 .codex
+
+solution.vtk
